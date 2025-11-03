@@ -94,5 +94,14 @@ export const mlAPI = {
     mlApi.get(`/similar/${contentId}`, { params: { limit } })
 };
 
+// Analytics API
+export const analyticsAPI = {
+  getContentAgg: () => api.get('/analytics/content-agg'),
+  getTrends: () => api.get('/analytics/trends'),
+  getKpis: () => api.get('/analytics/kpis')
+};
+
 export default api;
+
+
 

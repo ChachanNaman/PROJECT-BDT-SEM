@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { contentAPI, mlAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import ContentCard from '../components/ContentCard';
+import ContentRatingsD3 from '../components/charts/ContentRatingsD3';
+// import RatingsTrendsD3 from '../components/charts/RatingsTrendsD3';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -131,9 +133,19 @@ const Dashboard = () => {
       {renderSection('Trending Movies', trending.movies, 'movie', false)}
       {renderSection('Trending Songs', trending.songs, 'song', false)}
       {renderSection('Trending Books', trending.books, 'book', false)}
+
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Analytics (D3.js)</h2>
+        <div className="grid grid-cols-1 gap-6">
+          <ContentRatingsD3 />
+          {/** <RatingsTrendsD3 /> **/}
+        </div>
+      </div>
     </div>
   );
 };
 
 export default Dashboard;
+
+
 

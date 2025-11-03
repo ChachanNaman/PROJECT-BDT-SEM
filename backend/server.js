@@ -24,6 +24,7 @@ app.use('/api/content', require('./routes/content'));
 app.use('/api/ratings', require('./routes/ratings'));
 app.use('/api/search', require('./routes/search'));
 app.use('/api/upload', require('./routes/upload'));
+app.use('/api/analytics', require('./routes/analytics'));
 
 // Health check
 app.get('/api/health', (req, res) => {

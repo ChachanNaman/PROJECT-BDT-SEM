@@ -41,3 +41,5 @@ contentSchema.index({ type: 1, rating: -1 });
 
 module.exports = mongoose.model('Content', contentSchema);
 
+
+
