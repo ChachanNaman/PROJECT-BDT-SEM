@@ -101,6 +101,18 @@ export const analyticsAPI = {
   getKpis: () => api.get('/analytics/kpis')
 };
 
+export const vizAPI = {
+  countsByType: () => api.get('/analytics/counts-by-type'),
+  avgRatingByGenre: (type, limit=20) => api.get('/analytics/avg-rating-by-genre', { params: { type, limit } }),
+  countByYear: (type) => api.get('/analytics/count-by-year', { params: { type } }),
+  topRated: (type, limit=10) => api.get('/analytics/top-rated', { params: { type, limit } }),
+  genreCount: (type, limit=20) => api.get('/analytics/genre-count', { params: { type, limit } }),
+  topAuthors: (limit=10) => api.get('/analytics/top-authors', { params: { limit } }),
+  topArtists: (limit=10) => api.get('/analytics/top-artists', { params: { limit } }),
+  ratingDistribution: () => api.get('/analytics/rating-distribution'),
+  avgRatingByType: () => api.get('/analytics/avg-rating-by-type')
+};
+
 export default api;
 
 

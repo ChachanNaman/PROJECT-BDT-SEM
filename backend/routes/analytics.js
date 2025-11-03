@@ -1,5 +1,6 @@
 const express = require('express');
 const Content = require('../models/Content');
+const Rating = require('../models/Rating');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
@@ -69,6 +70,93 @@ router.get('/top-rated', async (req, res) => {
     if (type) query.type = type;
     const items = await Content.find(query).sort({ rating: -1, ratingCount: -1 }).limit(parseInt(limit));
     res.json({ data: items });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET /api/analytics/genre-count?type=movie|song|book&limit=20
+router.get('/genre-count', async (req, res) => {
+  try {
+    const { type, limit = 20 } = req.query;
+    const matchStage = {};
+    if (type) matchStage.type = type;
+    const pipeline = [
+      { $match: matchStage },
+      { $unwind: { path: '$genre', preserveNullAndEmptyArrays: false } },
+      { $group: { _id: '$genre', count: { $sum: 1 } } },
+      { $project: { _id: 0, genre: '$_id', count: 1 } },
+      { $sort: { count: -1 } },
+      { $limit: parseInt(limit) }
+    ];
+    const results = await Content.aggregate(pipeline);
+    res.json({ data: results });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET /api/analytics/top-authors?limit=10
+router.get('/top-authors', async (req, res) => {
+  try {
+    const { limit = 10 } = req.query;
+    const pipeline = [
+      { $match: { type: 'book', author: { $ne: null } } },
+      { $group: { _id: '$author', count: { $sum: 1 } } },
+      { $project: { _id: 0, author: '$_id', count: 1 } },
+      { $sort: { count: -1 } },
+      { $limit: parseInt(limit) }
+    ];
+    const results = await Content.aggregate(pipeline);
+    res.json({ data: results });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET /api/analytics/top-artists?limit=10
+router.get('/top-artists', async (req, res) => {
+  try {
+    const { limit = 10 } = req.query;
+    const pipeline = [
+      { $match: { type: 'song', artist: { $ne: null } } },
+      { $group: { _id: '$artist', count: { $sum: 1 } } },
+      { $project: { _id: 0, artist: '$_id', count: 1 } },
+      { $sort: { count: -1 } },
+      { $limit: parseInt(limit) }
+    ];
+    const results = await Content.aggregate(pipeline);
+    res.json({ data: results });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET /api/analytics/rating-distribution
+router.get('/rating-distribution', async (_req, res) => {
+  try {
+    const pipeline = [
+      { $group: { _id: '$rating', count: { $sum: 1 } } },
+      { $project: { _id: 0, rating: '$_id', count: 1 } },
+      { $sort: { rating: 1 } }
+    ];
+    const results = await Rating.aggregate(pipeline);
+    res.json({ data: results });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET /api/analytics/avg-rating-by-type
+router.get('/avg-rating-by-type', async (_req, res) => {
+  try {
+    const pipeline = [
+      { $group: { _id: '$type', avgRating: { $avg: { $ifNull: ['$rating', 0] } } } },
+      { $project: { _id: 0, type: '$_id', avgRating: { $round: ['$avgRating', 2] } } },
+      { $sort: { type: 1 } }
+    ];
+    const results = await Content.aggregate(pipeline);
+    res.json({ data: results });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
