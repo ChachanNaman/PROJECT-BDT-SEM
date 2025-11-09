@@ -9,7 +9,7 @@ export default function RatingsTrendsD3() {
   useEffect(() => {
     analyticsAPI.getTrends().then(res => setData(res.data || []));
   }, []);
-
+  
   useEffect(() => {
     if (!data || data.length === 0) return;
     const container = ref.current;
